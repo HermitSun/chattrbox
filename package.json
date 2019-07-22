@@ -26,7 +26,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "jquery": "^3.4.1",
     "mime": "^2.4.4",
+    "moment": "^2.24.0",
     "ws": "^7.1.1"
   },
   "devDependencies": {

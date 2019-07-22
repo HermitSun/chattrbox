@@ -6,6 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/common.css">
 </head>
 <body class="container">
 <header>
@@ -14,14 +15,16 @@
 <section>
     <div class="panel panel-default">
         <div class="panel-body">
-
+            <form data-chat="chat-form">
+                <ul data-chat="message-list"></ul>
+                <div class="input-group">
+                    <input type="text" class="form-control" data-chat="message-input">
+                    <span class="input-group-btn">
+                        <input class="btn btn-default" type="submit" value="Go!">
+                    </span>
+                </div>
+            </form>
         </div>
-    </div>
-    <div class="input-group">
-        <input type="text" class="form-control">
-        <span class="input-group-btn">
-        <button class="btn btn-default" type="button">Go!</button>
-      </span>
     </div>
 </section>
 <script src="scripts/dist/main.js" charset="UTF-8"></script>

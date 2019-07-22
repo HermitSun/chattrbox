@@ -1,0 +1,106 @@
+/*为输入框准备的relative父布局*/
+div.panel {
+    position: relative;
+}
+
+ul[data-chat="message-list"] {
+    padding: 0;
+    list-style: none;
+}
+
+/*不是本人发送的消息*/
+.message-row {
+    display: flex;
+    flex-direction: row-reverse; /*这里为什么要reverse？还不是因为书上代码非得反着写（摔）*/
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+
+.message-row > p {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+    /*为聊天内容准备的relative父布局*/
+    position: relative;
+}
+
+img {
+    flex: 0 1 auto;
+    border-radius: 0 20px 20px 0;
+}
+
+.message-username {
+    flex: 0 1 auto;
+    display: block;
+    margin-right: 10px;
+
+    text-align: right;
+    font-weight: bold;
+}
+
+.timestamp {
+    flex: 0 1 auto;
+    display: block;
+    margin-right: 10px;
+
+    text-align: right;
+    font-style: italic;
+}
+
+.message-message {
+    flex: 0 1 auto;
+    display: block;
+    margin-right: 10px;
+    /*移出文档流*/
+    position: absolute;
+    top: 20px; /*这里写死也莫得办法，谁让书上非得用span*/
+    right: 0;
+
+    text-align: right;
+}
+
+/*是本人发送的消息，省略了部分已经出现的属性*/
+.me {
+    flex-direction: row;
+}
+
+.me > p {
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.me img {
+    border-radius: 20px 0 0 20px;
+}
+
+.me .message-username {
+    margin-right: 0;
+    margin-left: 10px;
+
+    text-align: left;
+}
+
+.me .timestamp {
+    margin-right: 0;
+    margin-left: 10px;
+
+    text-align: left;
+}
+
+.me .message-message {
+    margin-right: 0;
+    margin-left: 10px;
+    /*移出文档流*/
+    left: 0;
+
+    text-align: left;
+}
+
+/*输入框，主要是书上非得从form的显示里移出去，所以写死也莫得办法*/
+.input-group {
+    position: absolute;
+    bottom: -55px;
+    left: 0;
+}
