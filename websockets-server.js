@@ -5,7 +5,6 @@ const ws = new WebSocketServer({
   port
 });
 const messages = [];
-let isAuthorized = false;
 
 console.log('WebSockets server started');
 
@@ -20,19 +19,8 @@ ws.on('connection', function (socket) {
   socket.on('message', function (data) {
     console.log('message received: ' + data);
     messages.push(data);
-    if (isAuthorized) {
-      ws.clients.forEach(function (clientSocket) {
-        clientSocket.send(data);
-        // clientSocket.send(data);
-      });
-    }
-    if (data === 'Swordfish' && !isAuthorized) {
-      ws.clients.forEach(function (clientSocket) {
-        messages.forEach(function (msg) {
-          clientSocket.send(msg);
-        });
-      });
-      isAuthorized = true;
-    }
+    ws.clients.forEach(function (clientSocket) {
+      clientSocket.send(data);
+    });
   });
 });

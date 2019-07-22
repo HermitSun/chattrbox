@@ -1,3 +1,3 @@
 import ChatApp from './app';
 
-new ChatApp();
+window.app = new ChatApp();
