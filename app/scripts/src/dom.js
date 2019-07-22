@@ -64,6 +64,11 @@ export class ChatList {
     $messageRow.append($img);
     $messageRow.append($message);
     this.$list.append($messageRow);
+    // 2s内的新消息淡入
+    if ((new Date() - new Date(t).getTime()) / 1000 < 2) {
+      $messageRow.hide();
+      $messageRow.fadeIn();
+    }
     $messageRow.get(0).scrollIntoView();
   }
 

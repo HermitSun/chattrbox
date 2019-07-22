@@ -100,7 +100,9 @@ img {
 
 /*输入框，主要是书上非得从form的显示里移出去，所以写死也莫得办法*/
 .input-group {
+    margin-bottom: 20px;
+
     position: absolute;
-    bottom: -55px;
+    bottom: -75px;
     left: 0;
 }
