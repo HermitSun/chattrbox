@@ -72,7 +72,6 @@ export class ChatList {
     $messageRow.get(0).scrollIntoView();
   }
 
-
   init() {
     this.timer = setInterval(() => {
       $('[data-time]').each((index, element) => {
