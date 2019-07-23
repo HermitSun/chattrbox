@@ -11,6 +11,24 @@
 <body class="container">
 <header>
     <h1>Chattrbox</h1>
+    <!-- Single button -->
+    <div class="btn-group">
+        <button type="button"
+                class="btn btn-primary dropdown-toggle"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                data-chat="menu-button">
+            Current Chat Room:
+            <span data-chat="current-chat-room"></span>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu"
+            data-chat="chat-room-list">
+            <li class="disabled"><a>Choose A Chat Room</a></li>
+            <li role="separator" class="divider"></li>
+        </ul>
+    </div>
 </header>
 <section>
     <div class="panel panel-default">

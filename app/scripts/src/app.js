@@ -1,79 +1,67 @@
 import socket from './ws-client';
-import {MessageStore, UserStore} from "./storage";
-import {ChatForm, ChatList, promptForUsername} from "./dom";
+import {ChatRoomStore, CurrentChatRoomStore, UserStore} from "./storage";
+import {ChatForm, ChatList, ChatRoom, promptForChatRoomName, promptForUsername} from "./dom";
 
 const FORM_SELECTOR = '[data-chat="chat-form"]';
 const INPUT_SELECTOR = '[data-chat="message-input"]';
 const LIST_SELECTOR = '[data-chat="message-list"]';
+const MENU_BUTTON_SELECTOR = '[data-chat="menu-button"]';
+const CURRENT_CHAT_ROOM_SELECTOR = '[data-chat="current-chat-room"]';
+const CHAT_ROOM_LIST_SELECTOR = '[data-chat="chat-room-list"]';
 
 const userStore = new UserStore('x-chattrbox/u');
-const messageStore = new MessageStore('x-chattrbox/m');
+const chatRoomStore = new ChatRoomStore('x-chattrbox/rn');
+const currentChatRoomStore = new CurrentChatRoomStore('x-chattrbox/crn');
 
 let username = userStore.get();
+let chatRoomList = chatRoomStore.get();
+let currentChatRoom = currentChatRoomStore.get();
+
 if (!username) {
   username = promptForUsername();
   userStore.set(username);
-  // 重启的时候清空缓存
-  messageStore.clear();
 }
-
-// 随便找个啥分割一下，反正出现的概率小就行；考虑初始值为null的情况
-// 不想弄得整个localStorage很臃肿，就只能引入这些潜在的bug了
-// 你说搞个数据库多好，非得本地存储；前端又没有什么特别好的持久化措施
-let messages = [];
-const localMessages = messageStore.get();
-if (localMessages) {
-  localMessages.split('~').forEach((message) => {
-    if (message) {
-      messages.push(JSON.parse(message));
-    }
-  });
+if (!currentChatRoom) {
+  currentChatRoom = promptForChatRoomName();
+  currentChatRoomStore.set(currentChatRoom);
 }
+if (!chatRoomList) { // 初始化时是null
+  chatRoomStore.set(currentChatRoom);
+} else {
+  chatRoomList = chatRoomList.split(',');
+}
+console.log(chatRoomList);
 
 class ChatApp {
   constructor() {
     this.chatForm = new ChatForm(FORM_SELECTOR, INPUT_SELECTOR);
     this.chatList = new ChatList(LIST_SELECTOR, username);
+    this.chatRoom = new ChatRoom(MENU_BUTTON_SELECTOR, CURRENT_CHAT_ROOM_SELECTOR, CHAT_ROOM_LIST_SELECTOR);
     socket.init('ws://localhost:3001');
     socket.registerOpenHandler(() => {
+      socket.sendMessage({targetChatRoom: currentChatRoom}); // 初始化的时候告诉服务器现在在哪个聊天室
       this.chatForm.init((text) => {
         const message = new ChatMessage({message: text});
         socket.sendMessage(message.serialize());
       });
       this.chatList.init();
-      // 有本地缓存的时候读本地缓存
-      if (messages.length > 0) {
-        messages.forEach((message) => {
-          const messageToSend = new ChatMessage(message);
-          this.chatList.drawMessage(messageToSend.serialize());
-        });
-      }
+      this.chatRoom.init(currentChatRoom, chatRoomList, (targetChatRoom) => {
+        this.chatList.clear();
+        socket.sendMessage({targetChatRoom});
+      });
     });
     socket.registerMessageHandler((data) => {
       console.log(data);
+      if (data.chatRooms) {
+        chatRoomList = data.chatRooms.toString();
+        chatRoomStore.set(data.chatRooms.toString());
+        currentChatRoom = data.currentChatRoom;
+        return;
+      }
       const message = new ChatMessage(data);
       this.chatList.drawMessage(message.serialize());
-      // 去重；而且需要考虑到localStorage初始化的时候里面是null
-      // 去重的标准是时间戳。总不能1ms内连发几条消息吧……
-      const localMessages = messageStore.get();
-      if (!localMessages) {
-        messageStore.set(JSON.stringify(message));
-      } else if (!localMessages.includes(message.timestamp)) {
-        messageStore.set(localMessages + '~' + JSON.stringify(message));
-      }
     });
-    // socket.registerCloseHandler(setTimeout(() => {
-    //   console.log('Will close. Please restart manually in console.');
-    //   socket.closeSocket();
-    //   setTimeout(() => {
-    //     socket.init('ws://localhost:3001');
-    //   }, 5000);
-    // }, 1000));
   }
-
-  // restart() {
-  //   socket.init('ws://localhost:3001');
-  // }
 }
 
 class ChatMessage {

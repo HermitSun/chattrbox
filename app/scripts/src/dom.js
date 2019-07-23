@@ -8,8 +8,52 @@ function createGravatarUrl(username) {
 }
 
 export function promptForUsername() {
-  let username = prompt('Enter a username');
+  const username = prompt('Enter a username');
   return username.toLowerCase();
+}
+
+export function promptForChatRoomName() {
+  const chatRoomName = prompt('Enter a chat room name');
+  return chatRoomName.toLowerCase();
+}
+
+export class ChatRoom {
+  constructor(buttonSel, currentSel, listSel) {
+    this.$menuButton = $(buttonSel);
+    this.$currentChatRoom = $(currentSel);
+    this.$chatRoomList = $(listSel);
+  }
+
+  init(current, list, changeChatRoomCallback) {
+    this.$currentChatRoom.text(current);
+    // 如果就一项（或者没有，比如初始化的时候），没必要开启下拉栏
+    // 在这里就不用发消息了，因为app初始化的时候已经发过了，会重复
+    if (!list || list.length <= 1) {
+      this.$menuButton.attr('disabled', 'disabled');
+      // changeChatRoomCallback(current);
+      return;
+    }
+    list.forEach(item => {
+      const $item = $('<li>');
+      const $anchor = $('<a>', {
+        text: item
+      });
+      $anchor.on('click', (event) => {
+        event.preventDefault();
+        const targetChatRoom = event.target.innerText;
+        // 目标和当前不一致再切换，因为修改比读取的开销大
+        if (targetChatRoom === this.$currentChatRoom.text()) {
+          return;
+        }
+        this.$currentChatRoom.text(targetChatRoom);
+        // 这里触发切换聊天室的逻辑；如果切换失败，换回去就是了
+        // 还是类似于乐观锁的机制
+        changeChatRoomCallback(targetChatRoom);
+      });
+      $item.append($anchor);
+      this.$chatRoomList.append($item);
+    });
+  }
 }
 
 export class ChatForm {
@@ -81,6 +125,10 @@ export class ChatList {
         $element.html(ago);
       });
     }, 1000);
+  }
+
+  clear() {
+    this.$list.empty();
   }
 }
 

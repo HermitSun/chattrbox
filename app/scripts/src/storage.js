@@ -21,15 +21,18 @@ export class UserStore extends Store {
   }
 }
 
-// 非要继承也只能这样吧，要么每次都实例化，当成wrapper用；或者用分隔符分开
-// 反正都不咋地。这种性能损失（以及这种无谓的包装）真的是有意义的吗？
-export class MessageStore extends Store {
+// 单独设计一个重复的聊天室类看似有点重复，但能降低耦合
+// 如果只是因为可以少写代码就“复用”,那耦合得高到什么程度了……
+export class ChatRoomStore extends Store {
   constructor(key) {
-    super(localStorage);
+    super(sessionStorage);
     this.key = key;
   }
+}
 
-  clear() {
-    this.api.removeItem(this.key);
+export class CurrentChatRoomStore extends Store {
+  constructor(key) {
+    super(sessionStorage);
+    this.key = key;
   }
 }
