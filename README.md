@@ -13,7 +13,7 @@
 也就是说，接口是这样的：
 
 ```typescript
-interface ChatRooms {
+interface ChatRoomToMessageMap {
     [roomName: string]: Message[];
 }
 interface chatRoomToClientMap {
